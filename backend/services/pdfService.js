@@ -36,7 +36,7 @@ const pdfService = {
 
       // Index in Elasticsearch
       await elasticClient.index({
-        index: 'pdfs',
+        index: 'xap',
         document: {
           filename: file.originalname,
           content: data.text,
