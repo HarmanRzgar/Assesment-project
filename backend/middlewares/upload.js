@@ -17,9 +17,23 @@ const storage = multer.diskStorage({
         return cb(null, fallbackName);
       }
       
-      const pdfFiles = files.filter(file => file.endsWith('.pdf'));
-      const nextNumber = (pdfFiles.length + 1).toString().padStart(3, '0');
+      // Filter PDF files and extract numbers
+      const numbers = files
+        .filter(file => file.endsWith('.pdf'))
+        .map(file => {
+          // Extract number from filename (e.g., "001.pdf" -> 1)
+          const numberStr = file.replace('.pdf', '');
+          return parseInt(numberStr, 10);
+        })
+        .filter(num => !isNaN(num));  // Filter out any NaN values
+
+      // Find the highest number, default to 0 if no files exist
+      const highestNumber = numbers.length > 0 ? Math.max(...numbers) : 0;
+      
+      // Generate next number
+      const nextNumber = (highestNumber + 1).toString().padStart(3, '0');
       const newFilename = `${nextNumber}.pdf`;
+      
       cb(null, newFilename);
     });
   }
