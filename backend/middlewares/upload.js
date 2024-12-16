@@ -2,15 +2,22 @@ const multer = require("multer");
 const fs = require("fs");
 const path = require("path");
 
-// Create uploads directory if it doesn't exist
-if (!fs.existsSync("./uploads")) {
-  fs.mkdirSync("./uploads");
-}
-
 const storage = multer.diskStorage({
-  destination: "./uploads/",
+  destination: function (req, file, cb) {
+    // Use absolute path for uploads directory
+    const uploadsDir = path.join(__dirname, '..', 'uploads');
+    
+    // Create uploads directory if it doesn't exist
+    if (!fs.existsSync(uploadsDir)) {
+      fs.mkdirSync(uploadsDir, { recursive: true });
+    }
+    cb(null, uploadsDir);
+  },
   filename: function (req, file, cb) {
-    fs.readdir('./uploads', (err, files) => {
+    // Use absolute path for reading directory
+    const uploadsDir = path.join(__dirname, '..', 'uploads');
+    
+    fs.readdir(uploadsDir, (err, files) => {
       if (err) {
         console.error("Error reading directory:", err);
         const fallbackName = Date.now().toString().slice(0, 3) + '.pdf';
