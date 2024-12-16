@@ -19,8 +19,23 @@ if (!fs.existsSync("./uploads")) {
 }
 
 // Middleware
-app.use(cors());
+app.use(cors({
+  origin: [
+    'http://localhost:3000',        
+    'http://localhost:5173',          
+    'https://assesment-project-dgm6.vercel.app/' 
+  ],
+  methods: ['GET', 'POST', 'DELETE', 'UPDATE', 'PUT', 'PATCH'],
+  credentials: true
+}));
+
 app.use(express.json());
+
+app.use((req, res, next) => {
+  res.header('Access-Control-Allow-Origin', '*');
+  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
+  next();
+});
 
 // Serve static files from uploads directory with basic validation
 app.use("/uploads", (req, res, next) => {
@@ -55,10 +70,6 @@ process.on('SIGINT', () => {
 
 const PORT = process.env.PORT || 3000;
 
-app.use(cors({
-  origin: ['your-frontend-url', 'http://localhost:3000'],
-  credentials: true
-}));
 
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
