@@ -36,12 +36,12 @@ const PDFTable = ({ pdfs, onDelete }) => {
                   >
                     View
                   </a>
-                  <button
+                  {/* <button
                     onClick={() => onDelete(pdf.filename)}
                     className="px-3 py-1.5 bg-red-500 text-white rounded text-sm hover:bg-red-600 shadow-sm hover:shadow transition-all"
                   >
                     Delete
-                  </button>
+                  </button> */}
                 </div>
               </td>
             </tr>
