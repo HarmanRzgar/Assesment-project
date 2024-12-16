@@ -7,7 +7,7 @@ const searchService = {
     try {
       // First, clean up any stale entries
       const cleanupResult = await elasticClient.search({
-        index: "pdfs",
+        index: "xap",
         size: 1000,
         body: {
           query: {
@@ -21,7 +21,7 @@ const searchService = {
         const filePath = path.join(__dirname, '..', 'uploads', hit._source.filepath);
         if (!fs.existsSync(filePath)) {
           await elasticClient.delete({
-            index: 'pdfs',
+            index: 'xap',
             id: hit._id
           });
         }
@@ -29,7 +29,7 @@ const searchService = {
 
       // Perform the actual search
       const result = await elasticClient.search({
-        index: "pdfs",
+        index: "xap",
         body: {
           query: {
             match: {

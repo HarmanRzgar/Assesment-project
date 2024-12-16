@@ -70,7 +70,7 @@ const MainLayout = ({ children }) => {
               </svg>
               <span className={`
                 transition-opacity duration-300 whitespace-nowrap
-                ${isDesktopSidebarOpen ? 'opacity-100 visible' : 'opacity-0 invisible w-0'}
+                ${isDesktopSidebarOpen ? 'opacity-100 visible' : 'opacity-0 invisible w-0 h-0'}
               `}>
                 Dashboard
               </span>

@@ -3,6 +3,9 @@ const path = require('path');
 const pdfParse = require('pdf-parse');
 const elasticClient = require('../config/database');
 
+// Centralize index name as a constant
+const ELASTIC_INDEX = 'xap';  // You can change this to whatever you want
+
 const pdfService = {
   // List all PDFs from the uploads directory
   listAllPdfs: async () => {
@@ -36,7 +39,7 @@ const pdfService = {
 
       // Index in Elasticsearch
       await elasticClient.index({
-        index: 'xap',
+        index: ELASTIC_INDEX,
         document: {
           filename: file.originalname,
           content: data.text,
@@ -55,7 +58,7 @@ const pdfService = {
     }
   },
 
-  // Delete a PDF file and its index
+  // Delete a PDF file and its index entry
   deletePdf: async (filename) => {
     try {
       const filePath = path.join(__dirname, '..', 'uploads', filename);
@@ -65,30 +68,36 @@ const pdfService = {
         fs.unlinkSync(filePath);
       }
       
-      // Search for the document in Elasticsearch
-      const searchResult = await elasticClient.search({
-        index: 'pdfs',
+      // Delete from Elasticsearch
+      await elasticClient.deleteByQuery({
+        index: ELASTIC_INDEX,
         body: {
           query: {
             match: {
               filepath: filename
             }
           }
-        }
+        },
+        refresh: true  // Force index refresh
       });
 
-      // Delete matching documents by ID
-      for (const hit of searchResult.hits.hits) {
-        await elasticClient.delete({
-          index: 'pdfs',
-          id: hit._id
-        });
-      }
-      
-      // Force refresh the index
-      await elasticClient.indices.refresh({ index: 'pdfs' });
     } catch (error) {
       throw new Error('Failed to delete PDF: ' + error.message);
+    }
+  },
+
+  // Delete entire index
+  deleteIndex: async () => {
+    try {
+      const response = await elasticClient.indices.delete({
+        index: ELASTIC_INDEX
+      });
+      return {
+        message: 'Index deleted successfully',
+        response: response
+      };
+    } catch (error) {
+      throw new Error('Failed to delete index: ' + error.message);
     }
   },
 
@@ -98,7 +107,7 @@ const pdfService = {
       const files = fs.readdirSync(path.join(__dirname, '..', 'uploads'));
       
       const esResult = await elasticClient.search({
-        index: 'pdfs',
+        index: ELASTIC_INDEX,
         size: 1000,
         body: {
           query: {
@@ -112,7 +121,7 @@ const pdfService = {
       for (const hit of esResult.hits.hits) {
         if (!existingFiles.includes(hit._source.filepath)) {
           await elasticClient.delete({
-            index: 'pdfs',
+            index: ELASTIC_INDEX,
             id: hit._id
           });
         }
@@ -132,7 +141,7 @@ const pdfService = {
   cleanup: async () => {
     try {
       const esResult = await elasticClient.search({
-        index: 'pdfs',
+        index: ELASTIC_INDEX,
         size: 1000,
         body: {
           query: {
@@ -147,14 +156,14 @@ const pdfService = {
         const filePath = path.join(__dirname, '..', 'uploads', hit._source.filepath);
         if (!fs.existsSync(filePath)) {
           await elasticClient.delete({
-            index: 'pdfs',
+            index: ELASTIC_INDEX,
             id: hit._id
           });
           deletedCount++;
         }
       }
 
-      await elasticClient.indices.refresh({ index: 'pdfs' });
+      await elasticClient.indices.refresh({ index: ELASTIC_INDEX });
       
       return { 
         message: 'Cleanup completed',

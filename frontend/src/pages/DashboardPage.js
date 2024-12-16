@@ -38,6 +38,21 @@ const DashboardPage = () => {
     }
   };
 
+  const handleDelete = async (filename) => {
+    if (!window.confirm("Are you sure you want to delete this file?")) {
+      return;
+    }
+
+    try {
+      await api.deletePdf(filename);
+      Alert({ message: "File deleted successfully!" });
+      fetchPdfs(); // Refresh the list after deletion
+    } catch (error) {
+      console.error("Delete error:", error);
+      setError(error.response?.data?.error || "Error deleting file");
+    }
+  };
+
   return (
     <div>
       {error && (
@@ -53,7 +68,7 @@ const DashboardPage = () => {
 
       <div className="mb-8">
         <h2 className="text-xl md:text-2xl font-bold mb-4">All PDFs</h2>
-        <PDFTable pdfs={allPdfs} />
+        <PDFTable pdfs={allPdfs} onDelete={handleDelete} />
       </div>
     </div>
   );

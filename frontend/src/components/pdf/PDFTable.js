@@ -1,5 +1,5 @@
-import React from 'react';
-import api from '../../services/api';
+import React from "react";
+import api from "../../services/api";
 
 const PDFTable = ({ pdfs, onDelete }) => {
   return (
@@ -15,7 +15,7 @@ const PDFTable = ({ pdfs, onDelete }) => {
         </thead>
         <tbody>
           {pdfs.map((pdf) => (
-            <tr 
+            <tr
               key={pdf.filename}
               className="border-b border-gray-200 hover:bg-gray-50"
             >
@@ -36,22 +36,19 @@ const PDFTable = ({ pdfs, onDelete }) => {
                   >
                     View
                   </a>
-                  {/* <button
+                  <button
                     onClick={() => onDelete(pdf.filename)}
                     className="px-3 py-1.5 bg-red-500 text-white rounded text-sm hover:bg-red-600 shadow-sm hover:shadow transition-all"
                   >
                     Delete
-                  </button> */}
+                  </button>
                 </div>
               </td>
             </tr>
           ))}
           {pdfs.length === 0 && (
             <tr>
-              <td 
-                colSpan="4" 
-                className="p-5 text-center text-gray-500"
-              >
+              <td colSpan="4" className="p-5 text-center text-gray-500">
                 No PDFs uploaded yet
               </td>
             </tr>
