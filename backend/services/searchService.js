@@ -4,11 +4,14 @@ const elasticClient = require('../config/database');
 
 const ELASTIC_INDEX = process.env.ELASTIC_INDEX  // You can change this to whatever you want
 
+const ELASTIC_INDEX = process.env.ELASTIC_INDEX  // You can change this to whatever you want
+
 const searchService = {
   searchPdfs: async (query) => {
     try {
       // First, clean up any stale entries
       const cleanupResult = await elasticClient.search({
+        index: ELASTIC_INDEX,
         index: ELASTIC_INDEX,
         size: 1000,
         body: {
@@ -28,9 +31,20 @@ const searchService = {
       //     });
       //   }
       // }
+      // // Delete entries for files that no longer exist
+      // for (const hit of cleanupResult.hits.hits) {
+      //   const filePath = path.join(__dirname, '..', 'uploads', hit._source.filepath);
+      //   if (!fs.existsSync(filePath)) {
+      //     await elasticClient.delete({
+      //       index: 'xap',
+      //       id: hit._id
+      //     });
+      //   }
+      // }
 
       // Perform the actual search
       const result = await elasticClient.search({
+        index: ELASTIC_INDEX,
         index: ELASTIC_INDEX,
         body: {
           query: {
