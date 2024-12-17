@@ -6,7 +6,7 @@ const UploadForm = ({ onUpload, isLoading }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!selectedFile) {
-      alert("Please select a file first!");
+      onUpload(null); // Signal no file selected
       return;
     }
 
@@ -20,15 +20,14 @@ const UploadForm = ({ onUpload, isLoading }) => {
   return (
     <form
       onSubmit={handleSubmit}
-      className="flex flex-col sm:flex-row items-center gap-3 w-full max-w-md mx-auto"
+      className="flex flex-col sm:flex-row items-start gap-3 w-full max-w-md mx-auto"
     >
-      {/* Choose File Button + File Name */}
-      <div className="w-full flex flex-col items-center">
+      <div className="w-full">
         <label
           htmlFor="file-upload"
           className="w-full px-5 py-3 bg-gradient-to-r from-gray-200 to-gray-300 text-gray-700 
             rounded-lg shadow-sm cursor-pointer hover:from-gray-300 hover:to-gray-400 
-            transition-all text-center"
+            transition-all text-center block"
         >
           {selectedFile ? "Change File" : "Choose File"}
         </label>
@@ -40,25 +39,17 @@ const UploadForm = ({ onUpload, isLoading }) => {
           className="hidden"
         />
         {selectedFile && (
-          <div
-            className="mt-2 w-full text-sm text-gray-600 truncate text-center"
-            style={{
-              whiteSpace: "nowrap",
-              overflow: "hidden",
-              textOverflow: "ellipsis",
-            }}
-          >
+          <div className="mt-2 w-full text-sm text-gray-600 truncate text-center">
             {selectedFile.name}
           </div>
         )}
       </div>
 
-      {/* Upload Button */}
       <button
         type="submit"
         disabled={isLoading}
-        className={`w-full px-5 py-3 bg-blue-500 text-white rounded-lg shadow-sm 
-          transition-all text-center
+        className={`w-full sm:w-auto px-5 py-3 bg-blue-500 text-white rounded-lg shadow-sm 
+          transition-all text-center self-start
           ${isLoading ? "opacity-50 cursor-not-allowed" : "hover:bg-blue-600 hover:shadow-lg"}`}
       >
         {isLoading ? "Uploading..." : "Upload"}

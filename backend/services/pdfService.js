@@ -3,8 +3,8 @@ const path = require('path');
 const pdfParse = require('pdf-parse');
 const elasticClient = require('../config/database');
 
-// Centralize index name as a constant
-const ELASTIC_INDEX = 'xap';  // You can change this to whatever you want
+
+const ELASTIC_INDEX = process.env.ELASTIC_INDEX  // You can change this to whatever you want
 
 const pdfService = {
   // List all PDFs from the uploads directory
